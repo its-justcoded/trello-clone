@@ -1,6 +1,6 @@
 import express, {type Request,type Response}from "express";
 import {prisma} from "db/client";
-import { SignupSchema,LoginSchema } from "./zod";
+import { SignupSchema,LoginSchema } from "./../zod";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
@@ -23,7 +23,7 @@ app.post("/signup",async (req:Request,res:Response)=>{
         }
 
         const hashedPassword = await bcrypt.hash(password,10);
-        const user = await prisma.user.create({
+         await prisma.user.create({
             data:{email,password:hashedPassword}
         })
         return res.status(201).json({

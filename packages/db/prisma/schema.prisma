@@ -40,6 +40,8 @@ model Membership {
  author User @relation(fields:[userId], references:[id])
  orgId       String
  authors Org  @relation(fields:[orgId], references:[id])
+
+ @@unique([userId,orgId])
 }
 
 model Sections {

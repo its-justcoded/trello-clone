@@ -1,0 +1,30 @@
+import {z} from "zod";
+
+export const SignupSchema = z.object({
+    email:z.string().email(),
+    password:z.string().min(6).max(10)
+})
+
+export const LoginSchema = z.object({
+    email:z.string().email(),
+    password:z.string().min(6).max(10)
+})
+
+export const createOrgSchema = z.object({
+    name:z.string(),
+    description:z.string()
+})
+
+export const UpdateOrgSchema = z.object({
+    name:z.string().min(1,"name is required"),
+    description:z.string()
+})
+
+export const SectionSchema =z.object({
+    title:z.string(),
+})
+
+export const UpdateSectionSchema = z.object({
+    title:z.string()
+})
+
