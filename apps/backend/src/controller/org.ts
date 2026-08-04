@@ -48,7 +48,7 @@ app.post(("/createOrg"),authMiddleware,async(req:Request, res:Response)=>{
     
 });
 
-app.put(("/updateOrg"),authMiddleware,async(req:Request,res:Response)=>{
+app.put(("/updateOrg/:id"),authMiddleware,async(req:Request,res:Response)=>{
     try{
         const {success,data,error}=UpdateOrgSchema.safeParse(req.body);
         if(!success){
@@ -79,7 +79,7 @@ app.put(("/updateOrg"),authMiddleware,async(req:Request,res:Response)=>{
             where:{id:id},
             data:{name,description}
         })
-        return res.status(201).json({
+        return res.status(200).json({
             message:"Org Update Successfully",
             data:{name,description}
         })
@@ -116,6 +116,15 @@ app.get(("/organisation/:orgId"),authMiddleware,async(req:Request, res:Response)
                 name:true,
                 description:true
             }
+        });
+
+        if(!org){
+            return res.status(404).json({message:"org not found"})
+        }
+
+        return res.status(200).json({
+            message:"org fetch successfully",
+            data:org
         })
     }
     catch(error){
@@ -123,7 +132,7 @@ app.get(("/organisation/:orgId"),authMiddleware,async(req:Request, res:Response)
     }
 });
 
-app.delete("/deleteOrg",authMiddleware,async(req:Request, res:Response)=>{
+app.delete("/deleteOrg/:orgId",authMiddleware,async(req:Request, res:Response)=>{
     try{
         const {orgId}= req.params;
         if(!orgId || typeof orgId !== "string"){
