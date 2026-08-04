@@ -6,7 +6,6 @@ import jwt from "jsonwebtoken";
 import { authMiddleware } from "../middleware";
 import type { Membership } from "../../../../packages/db/generated/prisma/client";
 
-const JWT_SECRET=process.env.JWT_SECRET||"";
 
 const app = express();
 app.use(express.json())
@@ -47,7 +46,7 @@ app.post(("/createOrg"),authMiddleware,async(req:Request, res:Response)=>{
         return res.status(500).json({message:"internal server error"})
     }
     
-})
+});
 
 app.put(("/updateOrg"),authMiddleware,async(req:Request,res:Response)=>{
     try{
@@ -90,8 +89,75 @@ app.put(("/updateOrg"),authMiddleware,async(req:Request,res:Response)=>{
     }
     
 
-})
+});
 
-app.get(("/organisation"),async(req:Request, res:Response)=>{
+app.get(("/organisation/:orgId"),authMiddleware,async(req:Request, res:Response)=>{
+    try{
+        const {orgId} = req.params;
+
+        if(!orgId || typeof orgId !== "string"){
+            return res.status(400).json({message:"missing org id"});
+        }
     
+        const userId = req.userId;
+    
+        const membership = await prisma.membership.findUnique({
+            where:{userId_orgId:{userId,orgId}}
+        });
+    
+        if(!membership){
+            return res.status(403).json({message:"not authorized to view this org"})
+        }
+    
+    
+        const org = await prisma.org.findFirst({
+            where:{id:orgId},
+            select:{
+                name:true,
+                description:true
+            }
+        })
+    }
+    catch(error){
+        return res.status(500).json({message:"internal server error"})
+    }
+});
+
+app.delete("/deleteOrg",authMiddleware,async(req:Request, res:Response)=>{
+    try{
+        const {orgId}= req.params;
+        if(!orgId || typeof orgId !== "string"){
+            return res.status(400).json({message:"missing org id"})
+        }
+
+        const userId = req.userId;
+
+        const memebership = await prisma.membership.findUnique({
+            where:{userId_orgId:{userId,orgId}}
+        });
+
+        const role = memebership?.role;
+        if(role !== "admin"){
+            return res.status(403).json({message:"you are not authorized to delete this org"})
+        }
+
+        const org = await prisma.org.findUnique({
+            where:{id:orgId}
+        });
+
+        if(!org){
+            return res.status(404).json({message:"org not found"});
+        }
+
+        await prisma.org.delete({
+            where:{id:orgId}
+        })
+
+        return res.status(200).json({message:"org delete successfully"})
+    }
+    catch(error){
+        return res.status(500).json({message:"internal server error"});
+    }
 })
+    
+    
