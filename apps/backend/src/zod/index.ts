@@ -41,11 +41,13 @@ export const UpdateIssueSchema = z.object({
 })
 
 export const BoardSchema = z.object({
-    title:z.string()
+    title:z.string(),
+    orgId:z.string()
 })
 
 export const UpdateBoardSchema = z.object({
-    title:z.string()
+    title:z.string(),
+    orgId:z.string()
 })
 
 
