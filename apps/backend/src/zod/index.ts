@@ -32,12 +32,16 @@ export const UpdateSectionSchema = z.object({
 
 export const IssueSchema = z.object({
     title:z.string(),
-    description:z.string()
+    description:z.string(),
+    sectionId:z.string(),
+    boardId:z.string()
 })
 
 export const UpdateIssueSchema = z.object({
     title:z.string(),
-    description:z.string()
+    description:z.string(),
+    sectionId:z.string(),
+    boardId:z.string()
 })
 
 export const BoardSchema = z.object({
