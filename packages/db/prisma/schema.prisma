@@ -61,6 +61,7 @@ model Issue {
   boardId     String
  board   Board @relation(fields: [boardId] , references: [id])
  issue_map    Issue_Mapping[]
+ comments  Comments[]
 }
 
 model Board {
@@ -79,6 +80,13 @@ model Issue_Mapping{
  user  User @relation(fields: [userId], references: [id])
  issueId   String
  issue    Issue @relation(fields: [issueId], references: [id])
+}
+
+model Comments{
+  id      String @id @default(uuid())
+  comments  String
+  issueId  String
+  issue Issue @relation(fields: [issueId],references: [id])
 }
 
 

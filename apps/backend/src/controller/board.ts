@@ -7,7 +7,7 @@ import { BoardSchema, UpdateBoardSchema } from "../zod";
 const app = express();
 app.use(express.json());
 
-app.post (("/CreateBoard"),authMiddleware,async(req:Request,res:Response)=>{
+const createBoard =async(req:Request,res:Response)=>{
     try{
         const {success,data,error} = BoardSchema.safeParse(req.body);
         if(!success){
@@ -28,9 +28,11 @@ app.post (("/CreateBoard"),authMiddleware,async(req:Request,res:Response)=>{
     catch(error){
         return res.status(500).json({message:"internal server error"})
     }
-})
+};
+app.post (("/CreateBoard"),authMiddleware,createBoard);
 
-app.put(("/UpdateBoard/:id"),authMiddleware,async(req:Request,res:Response)=>{
+
+const UpdateBoard=async(req:Request,res:Response)=>{
     try{
         const {success,data,error}=UpdateBoardSchema.safeParse(req.body);
         if(!success){
@@ -73,9 +75,11 @@ app.put(("/UpdateBoard/:id"),authMiddleware,async(req:Request,res:Response)=>{
         return res.status(500).json({message:"internal server error"})
     }
 
-})
+};
+app.put(("/UpdateBoard/:id"),authMiddleware,UpdateBoard);
 
-app.get(("/Board/:id"),authMiddleware,async(req:Request,res:Response)=>{
+
+const getBoard = async(req:Request,res:Response)=>{
     try{
         const {id}= req.params;
         if(!id || typeof id !=="string"){
@@ -108,9 +112,11 @@ app.get(("/Board/:id"),authMiddleware,async(req:Request,res:Response)=>{
         return res.status(500).json({message:"internal server error"})
     }
 
-})
+};
+app.get(("/Board/:id"),authMiddleware,getBoard);
 
-app.delete(("/deleteBoard/:id"),authMiddleware,async(req:Request,res:Response)=>{
+
+const deleteBoard = async(req:Request,res:Response)=>{
     try{
         const {id} = req.params;
         if(!id || typeof id !=="string"){
@@ -145,4 +151,5 @@ app.delete(("/deleteBoard/:id"),authMiddleware,async(req:Request,res:Response)=>
     catch(error){
         return res.status(500).json({message:"internal server error"})
     }
-})
+};
+app.delete(("/deleteBoard/:id"),authMiddleware,deleteBoard);

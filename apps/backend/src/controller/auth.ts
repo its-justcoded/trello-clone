@@ -9,33 +9,34 @@ const JWT_SECRET=process.env.JWT_SECRET||"";
 const app = express();
 app.use(express.json())
 
-app.post("/signup",async (req:Request,res:Response)=>{
-   try{
-        const {success, data, error } = SignupSchema.safeParse(req.body);
-        if(!success){
-            return res.status(400).json({message:error.message})
-        }
+const signup =async (req:Request,res:Response)=>{
+    try{
+         const {success, data, error } = SignupSchema.safeParse(req.body);
+         if(!success){
+             return res.status(400).json({message:error.message})
+         }
+ 
+         const {email, password} = data;
+         const ExistingUser = await prisma.user.findUnique({where:{email}});
+         if(ExistingUser){
+             return res.status(409).json({message:"invalid email or password"});
+         }
+ 
+         const hashedPassword = await bcrypt.hash(password,10);
+          await prisma.user.create({
+             data:{email,password:hashedPassword}
+         })
+         return res.status(201).json({
+             message:"User created successfully!",
+         })
+    }
+    catch(error){
+     return res.status(500).json({message:"Internal server error!!"})
+    }
+ };
+app.post("/signup",signup);
 
-        const {email, password} = data;
-        const ExistingUser = await prisma.user.findUnique({where:{email}});
-        if(ExistingUser){
-            return res.status(409).json({message:"invalid email or password"});
-        }
-
-        const hashedPassword = await bcrypt.hash(password,10);
-         await prisma.user.create({
-            data:{email,password:hashedPassword}
-        })
-        return res.status(201).json({
-            message:"User created successfully!",
-        })
-   }
-   catch(error){
-    return res.status(500).json({message:"Internal server error!!"})
-   }
-});
-
-app.post ("/login",async (req:Request,res:Response)=>{
+const login =async (req:Request,res:Response)=>{
     try{
         const {success,data,error}=LoginSchema.safeParse(req.body);
         if(!success){
@@ -61,4 +62,5 @@ app.post ("/login",async (req:Request,res:Response)=>{
     catch(error){
         return res.status(500).json({message:"Internal server error!!"})
     }
-})
+};
+app.post ("/login",login);

@@ -1,13 +1,12 @@
 import express, {type Request, type Response} from "express";
 import { prisma } from "db/client";
-import {z} from "zod";
 import { authMiddleware } from "../middleware";
 import { SectionSchema, UpdateSectionSchema } from "../zod";
 
 const app = express();
 app.use(express.json());
 
-app.post (("/Section"),authMiddleware,async(req:Request,res:Response)=>{
+const createSection = async(req:Request,res:Response)=>{
     try{
         const {success,data,error}=SectionSchema.safeParse(req.body);
         if(!success) {
@@ -31,9 +30,12 @@ app.post (("/Section"),authMiddleware,async(req:Request,res:Response)=>{
     };
     
 
-});
+}
 
-app.put(("/updateSection/:id"),authMiddleware,async(req:Request,res:Response)=>{
+app.post (("/section"),authMiddleware,createSection);
+
+
+const updateSection =async(req:Request,res:Response)=>{
     try{
         const {success,data,error} = UpdateSectionSchema.safeParse(req.body);
         if(!success){
@@ -80,9 +82,10 @@ app.put(("/updateSection/:id"),authMiddleware,async(req:Request,res:Response)=>{
         return res.status(500).json({message:"internal server error"});
     }
 
-})
+}
+app.put(("/updateSection/:id"),authMiddleware,updateSection)
 
-app.get(("/section/:id"),authMiddleware,async(req:Request, res:Response)=>{
+const getSection =async(req:Request, res:Response)=>{
     try{
         const {id} = req.params;
 
@@ -120,9 +123,11 @@ app.get(("/section/:id"),authMiddleware,async(req:Request, res:Response)=>{
         return res.status(500).json({message:"internal server error"})
     }
 
-})
+}
 
-app.delete(("/deleteSection/:id"),authMiddleware,async(req:Request, res:Response)=>{
+app.get(("/section/:id"),authMiddleware,getSection);
+
+const deleteSection = async(req:Request, res:Response)=>{
     try{
         const {id} = req.params;
 
@@ -161,4 +166,5 @@ app.delete(("/deleteSection/:id"),authMiddleware,async(req:Request, res:Response
     catch(error){
         return res.status(500).json({message:"internal server error"})
     }
-});
+};
+app.delete(("/deleteSection/:id"),authMiddleware,deleteSection);

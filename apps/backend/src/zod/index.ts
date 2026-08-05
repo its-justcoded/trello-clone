@@ -54,5 +54,15 @@ export const UpdateBoardSchema = z.object({
     orgId:z.string()
 })
 
+export const CommentSchema = z.object({
+    comments:z.string().min(10,"add a comment"),
+    issueId :z.string()
+})
+
+export const UpdateCommentSchema = z.object({
+    comments:z.string().min(10,"add a comment"),
+    issueId:z.string()
+})
+
 
 

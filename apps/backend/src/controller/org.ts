@@ -11,8 +11,7 @@ const app = express();
 app.use(express.json())
 
 
-
-app.post(("/createOrg"),authMiddleware,async(req:Request, res:Response)=>{
+const createOrg = async(req:Request, res:Response)=>{
     try{
         const {success,data,error}=createOrgSchema.safeParse(req.body);
          if(!success){
@@ -46,9 +45,10 @@ app.post(("/createOrg"),authMiddleware,async(req:Request, res:Response)=>{
         return res.status(500).json({message:"internal server error"})
     }
     
-});
+};
+app.post(("/createOrg"),authMiddleware,createOrg);
 
-app.put(("/updateOrg/:id"),authMiddleware,async(req:Request,res:Response)=>{
+const updateOrg = async(req:Request,res:Response)=>{
     try{
         const {success,data,error}=UpdateOrgSchema.safeParse(req.body);
         if(!success){
@@ -89,9 +89,10 @@ app.put(("/updateOrg/:id"),authMiddleware,async(req:Request,res:Response)=>{
     }
     
 
-});
+};
+app.put(("/updateOrg/:id"),authMiddleware,updateOrg)
 
-app.get(("/organisation/:orgId"),authMiddleware,async(req:Request, res:Response)=>{
+const getOrg = async(req:Request, res:Response)=>{
     try{
         const {orgId} = req.params;
 
@@ -130,9 +131,10 @@ app.get(("/organisation/:orgId"),authMiddleware,async(req:Request, res:Response)
     catch(error){
         return res.status(500).json({message:"internal server error"})
     }
-});
+};
+app.get(("/organisation/:orgId"),authMiddleware,getOrg);
 
-app.delete("/deleteOrg/:orgId",authMiddleware,async(req:Request, res:Response)=>{
+const deleteOrg =async(req:Request, res:Response)=>{
     try{
         const {orgId}= req.params;
         if(!orgId || typeof orgId !== "string"){
@@ -167,6 +169,5 @@ app.delete("/deleteOrg/:orgId",authMiddleware,async(req:Request, res:Response)=>
     catch(error){
         return res.status(500).json({message:"internal server error"});
     }
-})
-    
-    
+};
+app.delete("/deleteOrg/:orgId",authMiddleware,deleteOrg);
